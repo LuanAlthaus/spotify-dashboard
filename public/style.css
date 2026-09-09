@@ -1,0 +1,336 @@
+:root {
+  --ink: #F4F4F2;
+  --void: #060606;
+  --mid: #6E6E6E;
+  --hairline: #262626;
+  --hairline-bright: #3a3a3a;
+  --font-display: 'Archivo', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--void);
+  color: var(--ink);
+  overflow: hidden;
+  font-family: var(--font-display);
+  cursor: none;
+}
+
+/* textura sutil de grão, pra tirar a frieza do preto chapado */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.stage {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6vh 6vw;
+}
+
+/* ---------- Relógio ---------- */
+
+.time-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+}
+
+.signature {
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 1vw, 0.95rem);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 2vh;
+}
+
+.clock {
+  font-weight: 100;
+  font-size: clamp(5rem, 16vw, 13rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.date-row {
+  font-family: var(--font-mono);
+  font-size: clamp(0.85rem, 1.4vw, 1.15rem);
+  color: var(--mid);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.divider {
+  color: var(--hairline-bright);
+}
+
+.seconds {
+  color: var(--ink);
+  min-width: 2.2ch;
+}
+
+/* ---------- Now Playing ---------- */
+
+.now-playing {
+  margin-top: 6vh;
+  border-top: 1px solid var(--hairline);
+  padding-top: 3vh;
+  min-height: 14vh;
+  display: flex;
+  align-items: center;
+}
+
+.np-idle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--mid);
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 1.1vw, 1rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.np-idle-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--hairline-bright);
+}
+
+.np-active {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.np-art {
+  width: clamp(70px, 8vw, 110px);
+  height: clamp(70px, 8vw, 110px);
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.15);
+  border: 1px solid var(--hairline-bright);
+  flex-shrink: 0;
+}
+
+.np-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.np-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.np-track {
+  font-size: clamp(1.2rem, 2.4vw, 1.9rem);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.np-artist {
+  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  color: var(--mid);
+  font-weight: 300;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.np-progress-track {
+  margin-top: 0.6rem;
+  height: 1px;
+  width: 100%;
+  max-width: 420px;
+  background: var(--hairline);
+  position: relative;
+}
+
+.np-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--ink);
+  width: 0%;
+  transition: width 0.6s linear;
+}
+
+/* ---------- Vinil no canto ---------- */
+
+.vinyl-corner {
+  position: fixed;
+  bottom: -6vw;
+  right: -6vw;
+  width: 26vw;
+  height: 26vw;
+  max-width: 320px;
+  max-height: 320px;
+  min-width: 180px;
+  min-height: 180px;
+  opacity: 0.9;
+  z-index: 5;
+}
+
+.vinyl-svg {
+  width: 100%;
+  height: 100%;
+  animation: spin 8s linear infinite;
+  animation-play-state: paused;
+}
+
+.vinyl-corner.spinning .vinyl-svg {
+  animation-play-state: running;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.vinyl-ring {
+  fill: #0d0d0d;
+  stroke: var(--hairline-bright);
+  stroke-width: 1;
+}
+
+.vinyl-groove {
+  fill: none;
+  stroke: var(--hairline);
+  stroke-width: 0.75;
+}
+
+.vinyl-label {
+  fill: var(--void);
+  stroke: var(--mid);
+  stroke-width: 1;
+}
+
+.vinyl-hole {
+  fill: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vinyl-svg { animation: none; }
+}
+
+/* ---------- Clima ---------- */
+
+.weather-corner {
+  position: fixed;
+  top: 6vh;
+  right: 6vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5vh;
+  z-index: 5;
+}
+
+.weather-top {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+}
+
+.weather-temp {
+  font-family: var(--font-mono);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.weather-name {
+  font-family: var(--font-mono);
+  font-size: clamp(0.9rem, 1.6vw, 1.3rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.weather-city {
+  font-family: var(--font-mono);
+  font-size: clamp(0.65rem, 0.9vw, 0.8rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+/* ---------- Estatísticas do servidor ---------- */
+
+.system-stats {
+  position: fixed;
+  top: calc(15vh + 50px);
+  right: 6vw;
+  display: flex;
+  gap: 1.2rem;
+  z-index: 5;
+}
+
+.stat-item {
+  font-family: var(--font-mono);
+  font-size: clamp(0.7rem, 1vw, 0.85rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.stat-item span {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* ---------- Estatísticas do servidor ---------- */
+
+.system-stats {
+  position: fixed;
+  top: calc(15vh + 50px);
+  right: 6vw;
+  display: flex;
+  gap: 1.2rem;
+  z-index: 5;
+}
+
+.stat-item {
+  font-family: var(--font-mono);
+  font-size: clamp(0.7rem, 1vw, 0.85rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.stat-item span {
+  color: var(--ink);
+  font-weight: 700;
+}

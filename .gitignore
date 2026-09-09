@@ -1,0 +1,6 @@
+node_modules/
+.env
+tokens.json
+server.log
+.DS_Store
+*.bak

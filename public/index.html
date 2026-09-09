@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Painel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100;300;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="grain"></div>
+
+  <div class="vinyl-corner" id="vinyl">
+    <svg viewBox="0 0 200 200" class="vinyl-svg">
+      <circle cx="100" cy="100" r="98" class="vinyl-ring" />
+      <circle cx="100" cy="100" r="80" class="vinyl-groove" />
+      <circle cx="100" cy="100" r="62" class="vinyl-groove" />
+      <circle cx="100" cy="100" r="44" class="vinyl-groove" />
+      <circle cx="100" cy="100" r="26" class="vinyl-label" />
+      <circle cx="100" cy="100" r="4" class="vinyl-hole" />
+    </svg>
+  </div>
+
+  <div class="weather-corner" id="weather">
+    <div class="weather-top">
+      <span class="weather-name" id="weather-name"></span>
+      <span class="weather-temp" id="weather-temp">--°C</span>
+    </div>
+    <span class="weather-city" id="weather-city"></span>
+  </div>
+
+  <div class="system-stats" id="system-stats">
+    <span class="stat-item">CPU <span id="stat-cpu">--%</span></span>
+    <span class="stat-item">RAM <span id="stat-ram">--%</span></span>
+  </div>
+
+  <main class="stage">
+    <section class="time-block">
+      <div class="clock" id="clock">--:--</div>
+      <div class="date-row">
+        <span class="date" id="date">---</span>
+        <span class="divider">/</span>
+        <span class="seconds" id="seconds">00</span>
+      </div>
+    </section>
+
+    <section class="now-playing" id="now-playing">
+      <div class="np-idle" id="np-idle">
+        <span class="np-idle-dot"></span>
+        <span>Silêncio no momento</span>
+      </div>
+
+      <div class="np-active" id="np-active" hidden>
+        <img id="np-art" class="np-art" alt="" />
+        <div class="np-info">
+          <div class="np-eyebrow">Tocando agora</div>
+          <div class="np-track" id="np-track"></div>
+          <div class="np-artist" id="np-artist"></div>
+          <div class="np-progress-track">
+            <div class="np-progress-fill" id="np-progress"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
