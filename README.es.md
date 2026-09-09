@@ -2,6 +2,8 @@
 
 Un panel estilo "dashboard" para escritorio: reloj, fecha, lo que está sonando en Spotify en tiempo real, la temperatura de tu ciudad y el uso de CPU/RAM de tu computadora — todo en una pantalla minimalista en blanco y negro.
 
+![Captura de pantalla del panel](screenshot.png)
+
 ## Qué muestra
 
 - **Reloj y fecha** en tiempo real
@@ -123,30 +125,38 @@ Si querés dejar esto encendido en una pantalla dedicada (tipo un monitor extra 
 ## Prevención de errores (Troubleshooting)
 
 ### "INVALID_CLIENT: Invalid redirect URI" al acceder a /login
+
 La URL de redirección en el Spotify Dashboard (paso 3) tiene que ser **idéntica, carácter por carácter**, a la `SPOTIFY_REDIRECT_URI` de tu `.env`. Revisá que no sobre una `/` al final, que el puerto coincida, y que sea `http` (no `https`).
 
 ### El panel muestra "Silêncio no momento" aunque haya música sonando
+
 - Confirmá que Spotify esté **realmente reproduciendo** en algún dispositivo (celular, PC, altavoz) — la API solo devuelve datos si hay reproducción activa
 - Las sesiones privadas de Spotify (modo anónimo) no aparecen en la API
 - Esperá unos segundos — el panel se actualiza cada 5 segundos
 
 ### Error "NOT_AUTHENTICATED" en la terminal
+
 El archivo `tokens.json` no existe o es inválido. Entrá a `/login` de nuevo (paso 7) para generar uno nuevo.
 
 ### CPU y RAM siempre muestran "--%"
+
 El backend (`server.js`) necesita estar corriendo la versión más reciente del código. A diferencia del frontend (que solo necesita F5 en la página), los cambios en `server.js` requieren **reiniciar el proceso de Node** (`Ctrl+C` y `npm start` de nuevo).
 
 ### La temperatura siempre muestra "--°C"
+
 - Confirmá que `latitude` y `longitude` en el `CONFIG` (paso 5) estén completadas correctamente, con el signo menos cuando corresponda (ej: `-25.4284`, no `25.4284`)
 - Confirmá que la computadora tenga acceso a internet — la API del clima (Open-Meteo) necesita conexión externa
 
 ### La temperatura mostrada difiere un poco de otras apps de clima
+
 Esto es normal — cada servicio meteorológico usa modelos de predicción distintos, así que una diferencia de 1-2°C entre fuentes es esperable. No indica un error.
 
 ### Error "EADDRINUSE" o "puerto ya en uso" al ejecutar npm start
+
 Algo más ya está usando el puerto 4123. Cerrá lo que esté usando ese puerto, o cambiá el valor de `PORT` en el `.env` (recordando actualizar también la `SPOTIFY_REDIRECT_URI` y el Redirect URI en el Spotify Dashboard para que coincidan con el nuevo puerto).
 
 ### npm install falla o da error de versión
+
 Confirmá que estás usando Node.js 18 o más reciente: `node --version`. Versiones más antiguas pueden no soportar algunas funciones usadas en el proyecto.
 
 ## Licencia
