@@ -22,7 +22,7 @@ Um painel estilo "dashboard" para desktop: relógio, data, o que está tocando n
 ### 1. Clonar o repositório
 
 ```bash
-git clone <url-do-seu-repositorio>
+git clone https://github.com/LuanAlthaus/spotify-dashboard
 cd spotify-dashboard
 ```
 
