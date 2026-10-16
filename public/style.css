@@ -24,6 +24,12 @@ html, body {
   cursor: none;
 }
 
+body {
+  background:
+    linear-gradient(rgba(6, 6, 6, 0.6), rgba(6, 6, 6, 0.6)),
+    url("fundo.png") center / cover no-repeat;
+}
+
 /* textura sutil de grão, pra tirar a frieza do preto chapado */
 .grain {
   position: fixed;
