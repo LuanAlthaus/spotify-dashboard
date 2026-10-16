@@ -77,6 +77,9 @@ app.get('/callback', async (req, res) => {
 let accessToken = null;
 let accessTokenExpiraEm = 0;
 
+// Se o Spotify limitar as consultas (429), guardamos até quando e não insistimos
+let bloqueadoAte = 0;
+
 async function getAccessToken() {
   if (accessToken && Date.now() < accessTokenExpiraEm) return accessToken;
 
@@ -111,9 +114,18 @@ async function getAccessToken() {
 
 // Faz um GET na API do Spotify já com o token
 async function spotifyGet(url) {
+  if (Date.now() < bloqueadoAte) {
+    const erro = new Error('RATE_LIMITED');
+    erro.retryAfter = Math.ceil((bloqueadoAte - Date.now()) / 1000);
+    throw erro;
+  }
   const token = await getAccessToken();
   const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
   if (response.status === 401) accessToken = null; // força renovar na próxima
+  if (response.status === 429) {
+    const espera = Number(response.headers.get('retry-after')) || 5;
+    bloqueadoAte = Date.now() + espera * 1000;
+  }
   return response;
 }
 
@@ -145,6 +157,9 @@ app.get('/api/now-playing', async (req, res) => {
       durationMs: data.item.duration_ms,
     });
   } catch (err) {
+    if (err.message === 'RATE_LIMITED') {
+      return res.json({ playing: false, rateLimited: true, retryAfter: err.retryAfter });
+    }
     if (err.message === 'NOT_AUTHENTICATED') {
       return res.json({ playing: false, needsAuth: true });
     }

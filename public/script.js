@@ -56,6 +56,10 @@ const iconPlay = document.getElementById('icon-play');
 const queueEl = document.getElementById('queue');
 const queueList = document.getElementById('queue-list');
 
+// Tempo entre consultas ao Spotify (o Spotify limita quem consulta demais)
+const INTERVALO_MS = 3000;          // tocando
+const INTERVALO_PAUSADO_MS = 6000;  // pausado ou sem música
+
 // Estado atual da música (a barra de progresso anda sozinha entre as consultas)
 let temMusica = false;
 let tocando = false;
@@ -77,7 +81,8 @@ function agendarConsulta(ms) {
   timerConsulta = setTimeout(fetchNowPlaying, ms);
 }
 
-function mostrarSilencio() {
+function mostrarSilencio(texto) {
+  npIdle.textContent = texto || 'Silêncio no momento';
   temMusica = false;
   tocando = false;
   musicaId = null;
@@ -93,15 +98,20 @@ function mostrarPlayPause() {
 }
 
 async function fetchNowPlaying() {
-  let proxima = 1000; // consulta a cada 1 segundo
+  let proxima = INTERVALO_MS;
   try {
     const res = await fetch('/api/now-playing');
     const data = await res.json();
 
     if (data.rateLimited) {
-      proxima = (data.retryAfter || 5) * 1000; // Spotify pediu pra esperar
+      proxima = ((data.retryAfter || 5) + 1) * 1000; // Spotify pediu pra esperar
+      const volta = new Date(Date.now() + proxima);
+      const hh = String(volta.getHours()).padStart(2, '0');
+      const mm = String(volta.getMinutes()).padStart(2, '0');
+      mostrarSilencio(`Spotify em pausa até ${hh}:${mm}`);
     } else if (!data.track) {
       mostrarSilencio();
+      proxima = INTERVALO_PAUSADO_MS;
     } else {
       const tocandoAntes = tocando;
 
@@ -125,6 +135,8 @@ async function fetchNowPlaying() {
 
       mostrarPlayPause();
       if (tocando !== tocandoAntes) animarBarras();
+
+      if (!tocando) proxima = INTERVALO_PAUSADO_MS;
 
       // se a música está acabando, consulta logo depois do fim
       const falta = duracaoMs - progressoMs;
@@ -195,7 +207,7 @@ function desenharFila(lista) {
 }
 
 // atualiza a fila de vez em quando (caso você adicione músicas nela)
-setInterval(() => { if (temMusica) fetchQueue(); }, 15000);
+setInterval(() => { if (temMusica) fetchQueue(); }, 60000);
 
 // ---------- Barrinhas (discretas e lentas) ----------
 const barsEl = document.getElementById('bars');
