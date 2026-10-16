@@ -4,68 +4,91 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Painel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100;300;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <div class="grain"></div>
 
-  <div class="vinyl-corner" id="vinyl">
-    <svg viewBox="0 0 200 200" class="vinyl-svg">
-      <circle cx="100" cy="100" r="98" class="vinyl-ring" />
-      <circle cx="100" cy="100" r="80" class="vinyl-groove" />
-      <circle cx="100" cy="100" r="62" class="vinyl-groove" />
-      <circle cx="100" cy="100" r="44" class="vinyl-groove" />
-      <circle cx="100" cy="100" r="26" class="vinyl-label" />
-      <circle cx="100" cy="100" r="4" class="vinyl-hole" />
-    </svg>
-  </div>
+  <!-- Palco fixo de 1920x1080 (o script.js escala para a tela) -->
+  <main class="stage" id="stage">
 
-  <div class="weather-corner" id="weather">
-    <div class="weather-top">
-      <span class="weather-name" id="weather-name"></span>
-      <span class="weather-temp" id="weather-temp">--°C</span>
+    <!-- Relógio e data -->
+    <div class="clock" id="clock">--:--</div>
+    <div class="date" id="date">---</div>
+
+    <!-- Topo direito: nome, clima e sistema -->
+    <div class="user-name" id="user-name"></div>
+    <div class="vline v1"></div>
+    <div class="weather">
+      <div class="weather-row">
+        <span id="weather-icon"></span>
+        <span class="weather-temp" id="weather-temp">--°C</span>
+      </div>
+      <div class="weather-city" id="weather-city"></div>
+      <div class="stats-line">
+        <span>CPU <b id="stat-cpu">--%</b></span>
+        <span>RAM <b id="stat-ram">--%</b></span>
+      </div>
     </div>
-    <span class="weather-city" id="weather-city"></span>
-  </div>
 
-  <div class="system-stats" id="system-stats">
-    <span class="stat-item">CPU <span id="stat-cpu">--%</span></span>
-    <span class="stat-item">RAM <span id="stat-ram">--%</span></span>
-  </div>
+    <div class="hline"></div>
 
-  <main class="stage">
-    <section class="time-block">
-      <div class="clock" id="clock">--:--</div>
-      <div class="date-row">
-        <span class="date" id="date">---</span>
-        <span class="divider">/</span>
-        <span class="seconds" id="seconds">00</span>
-      </div>
-    </section>
-
-    <section class="now-playing" id="now-playing">
-      <div class="np-idle" id="np-idle">
-        <span class="np-idle-dot"></span>
-        <span>Silêncio no momento</span>
-      </div>
+    <!-- Tocando agora -->
+    <section class="player">
+      <div class="np-idle" id="np-idle">Silêncio no momento</div>
 
       <div class="np-active" id="np-active" hidden>
-        <img id="np-art" class="np-art" alt="" />
+        <img class="np-art" id="np-art" alt="" />
         <div class="np-info">
-          <div class="np-eyebrow">Tocando agora</div>
+          <div class="label">Tocando agora</div>
           <div class="np-track" id="np-track"></div>
           <div class="np-artist" id="np-artist"></div>
-          <div class="np-progress-track">
-            <div class="np-progress-fill" id="np-progress"></div>
+
+          <div class="progress"><div class="progress-fill" id="np-progress"></div></div>
+          <div class="times">
+            <span id="np-time-now">0:00</span>
+            <span id="np-time-left">-0:00</span>
+          </div>
+
+          <!-- Botões só decorativos (o de pause/play troca sozinho) -->
+          <div class="controls">
+            <svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="5" width="2.2" height="14"/><path d="M19 5v14L8 12z"/></svg>
+            <div class="play-btn">
+              <svg id="icon-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+              <svg id="icon-play" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M7 4v16l13-8z"/></svg>
+            </div>
+            <svg viewBox="0 0 24 24" fill="currentColor"><rect x="17.8" y="5" width="2.2" height="14"/><path d="M5 5v14l11-7z"/></svg>
+            <div class="bars" id="bars"></div>
           </div>
         </div>
       </div>
     </section>
+
+    <div class="vline v2"></div>
+
+    <!-- Em foco (fila) -->
+    <section class="queue" id="queue" hidden>
+      <div class="label">Em foco</div>
+      <div class="queue-list" id="queue-list"></div>
+    </section>
+
+    <div class="vline v3"></div>
+
+    <!-- Hoje -->
+    <section class="today">
+      <div class="label">Hoje</div>
+      <div class="today-date">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        <span id="today-date">--</span>
+      </div>
+      <div class="today-phrase" id="today-phrase"></div>
+    </section>
+
   </main>
 
+  <script src="config.js"></script>
+  <script src="frases.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

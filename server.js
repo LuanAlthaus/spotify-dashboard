@@ -73,7 +73,13 @@ app.get('/callback', async (req, res) => {
   }
 });
 
+// Guarda o access_token em memória (vale ~1h) para não renovar a cada consulta
+let accessToken = null;
+let accessTokenExpiraEm = 0;
+
 async function getAccessToken() {
+  if (accessToken && Date.now() < accessTokenExpiraEm) return accessToken;
+
   const tokens = loadTokens();
   if (!tokens || !tokens.refresh_token) {
     throw new Error('NOT_AUTHENTICATED');
@@ -96,30 +102,41 @@ async function getAccessToken() {
 
   const data = await response.json();
   if (data.error) throw new Error(data.error_description || data.error);
-  return data.access_token;
+
+  accessToken = data.access_token;
+  accessTokenExpiraEm = Date.now() + (data.expires_in - 60) * 1000;
+  if (data.refresh_token) saveTokens({ refresh_token: data.refresh_token });
+  return accessToken;
 }
 
-// Rota que o painel consulta a cada poucos segundos
+// Faz um GET na API do Spotify já com o token
+async function spotifyGet(url) {
+  const token = await getAccessToken();
+  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (response.status === 401) accessToken = null; // força renovar na próxima
+  return response;
+}
+
+// Rota que o painel consulta a cada ~1 segundo
 app.get('/api/now-playing', async (req, res) => {
   try {
-    const accessToken = await getAccessToken();
+    const response = await spotifyGet('https://api.spotify.com/v1/me/player/currently-playing');
 
-    const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-
-    if (response.status === 204 || response.status === 202) {
+    if (response.status === 429) {
+      return res.json({ playing: false, rateLimited: true, retryAfter: Number(response.headers.get('retry-after')) || 5 });
+    }
+    if (response.status === 204 || response.status === 202 || !response.ok) {
       return res.json({ playing: false });
     }
 
     const data = await response.json();
-
     if (!data || !data.item) {
       return res.json({ playing: false });
     }
 
     res.json({
       playing: data.is_playing,
+      id: data.item.id,
       track: data.item.name,
       artist: data.item.artists.map((a) => a.name).join(', '),
       album: data.item.album.name,
@@ -133,6 +150,25 @@ app.get('/api/now-playing', async (req, res) => {
     }
     console.error(err);
     res.status(500).json({ playing: false, error: err.message });
+  }
+});
+
+// Próximas músicas da fila (o painel mostra as 3 primeiras em "Em foco")
+app.get('/api/queue', async (req, res) => {
+  try {
+    const response = await spotifyGet('https://api.spotify.com/v1/me/player/queue');
+    if (!response.ok) return res.json({ queue: [] });
+
+    const data = await response.json();
+    const queue = (data.queue || []).slice(0, 3).map((item) => ({
+      track: item.name,
+      artist: (item.artists || []).map((a) => a.name).join(', '),
+      albumArt: item.album?.images?.[1]?.url || item.album?.images?.[0]?.url || null,
+    }));
+    res.json({ queue });
+  } catch (err) {
+    console.error(err);
+    res.json({ queue: [] });
   }
 });
 

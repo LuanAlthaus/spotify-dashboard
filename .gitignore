@@ -4,3 +4,4 @@ tokens.json
 server.log
 .DS_Store
 *.bak
+public/config.js
